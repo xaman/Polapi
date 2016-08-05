@@ -1,0 +1,11 @@
+# Mac OS X
+.DS_Store
+
+# Python
+*.pyc
+
+# Pictures
+*.png
+*.jpg
+*.jpeg
+*.bmp
