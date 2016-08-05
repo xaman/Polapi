@@ -3,7 +3,7 @@
 
 import RPi.GPIO as GPIO
 import picamera
-import Image
+from PIL import Image
 from PIL import ImageEnhance
 from Adafruit_Thermal import *
 import time
