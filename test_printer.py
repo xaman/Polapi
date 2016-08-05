@@ -5,56 +5,41 @@ __version__ = '0.0.1'
 
 import os
 import time
-import Image
 import shutil
 from datetime import datetime
+from PIL import Image
 from PIL import ImageEnhance
 from Adafruit_Thermal import *
-from printer import ThermalPrinter
+from thermal_printer import ThermalPrinter
 
-MAX_WIDTH = 380
+MAX_WIDTH = 384
+DEBUG = True
+
+# Default: heatTime=80, heatInterval=2, heatingDots=7
+HEAT_TIME = 140
+HEAT_INTERVAL = 2
+HEATING_DOTS = 7
 
 
 def _main():
-    # p = ThermalPrinter(heatTime=100, heatInterval=20, heatingDots=7)
-    # p.linefeed()
-    # img = Image.open("image.png")
-    # if (is_horizontal(img)):
-    #     img = rotate(img)
-    # img = resize(img)
-    # img = convert_to_1bit(img)
-    # data = list(img.getdata())
-    # w, h = img.size
-    # p.print_bitmap(data, w, h, False)
-    # p.linefeed(3)
-    printer = Adafruit_Thermal("/dev/ttyAMA0", 19200, timeout=5)
-    print_datetime(printer)
-    print_image(printer, "image.png")
-
-
-
-def print_datetime(printer):
-    now = datetime.now()
-    text = now.strftime('%Y-%m-%d %H:%M:%S')
-    printer.underlineOn()
-    printer.println(text)
-    printer.underlineOff()
-    printer.sleep()
-    printer.wake()
-
-
-def print_image(printer, path):
-    img = Image.open(path)
+    printer = ThermalPrinter(heatTime=HEAT_TIME, heatInterval=HEAT_INTERVAL, heatingDots=HEATING_DOTS)
+    printer.linefeed()
+    print_config(printer)
+    img = Image.open("picture.png")
     if (is_horizontal(img)):
         img = rotate(img)
     img = resize(img)
-    #img = atkinson_dither(img)
     img = convert_to_1bit(img)
-    printer.printImage(img, True)
-    printer.feed(2)
-    printer.sleep()
-    printer.wake()
-    printer.setDefault()
+    data = list(img.getdata())
+    w, h = img.size
+    printer.print_bitmap(data, w, h, False)
+    printer.linefeed(3)
+
+
+def print_config(printer):
+    config = "heatTime=%s, heatInterval=%s, heatingDots=%s" % (HEAT_TIME, HEAT_INTERVAL, HEATING_DOTS)
+    printer.print_text(config)
+    printer.linefeed()
 
 
 def is_horizontal(img):
@@ -64,22 +49,23 @@ def is_horizontal(img):
 
 
 def rotate(img):
+    log('Rotating')
     rotated = img.rotate(90, expand=True)
-    print 'Rotated'
     return rotated
 
 
 def resize(img):
+    log('Resizing')
     width = img.size[0]
     height = img.size[1]
     ratio = float(height) / float(width)
     new_height = float(MAX_WIDTH) * ratio
     resized = img.resize((MAX_WIDTH, int(new_height)), Image.ANTIALIAS)
-    print 'Resized'
     return resized
 
 
 def atkinson_dither(img):
+    log('Applying Atkinson dithering')
     img = img.convert('L')
     threshold = 128*[0] + 128*[255]
     for y in range(img.size[1]):
@@ -100,15 +86,20 @@ def atkinson_dither(img):
 
 
 def convert_to_1bit(img):
-    #return img.convert(mode='1', dither=Image.NONE)
+    log('Converting to 1 bit')
     return img.convert('1')
 
 
 def adjust_brightness(img, value):
+    log('Setting brightness')
     enhancer = ImageEnhance.Brightness(img)
     result = enhancer.enhance(value)
-    print 'Brightness set'
     return result
+
+
+def log(message):
+    if DEBUG:
+        print message
 
 if __name__ == '__main__':
     _main()
