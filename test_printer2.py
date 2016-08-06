@@ -3,42 +3,33 @@
 
 __version__ = '0.0.1'
 
-import sys
 import os
 import time
 import shutil
 from datetime import datetime
 from PIL import Image
 from PIL import ImageEnhance
+from Adafruit_Thermal import *
 from thermal_printer import ThermalPrinter
 
-INPUT = 'picture.png'
-OUTPUT = 'output.png'
 MAX_WIDTH = 384
 DEBUG = True
+PICTURE_PATH = "picture.png"
 
-# Default: heatTime=80, heatInterval=2, heatingDots=7
-HEAT_TIME = 140
-HEAT_INTERVAL = 2
-HEATING_DOTS = 7
 
+printer = Adafruit_Thermal("/dev/ttyAMA0", 19200, timeout=5)
 
 def _main():
-    path = get_path()
-    img = Image.open(path)
+    img = Image.open(PICTURE_PATH)
     if (is_horizontal(img)):
         img = rotate(img)
     img = resize(img)
-    img = convert_to_1bit(img)
-    img.save(OUTPUT)
-    print_picture(img)
-
-
-def get_path():
-    path = INPUT
-    if (len(sys.argv) > 1):
-        path = sys.argv[1]
-    return path
+    log('Printing')
+    printer.printImage(img, True)
+    printer.feed(2)
+    printer.sleep()	  # Tell printer to sleep
+    printer.wake()	   # Call wake() before printing again, even if reset
+    printer.setDefault()  # Restore printer to defaults
 
 
 def is_horizontal(img):
@@ -85,7 +76,6 @@ def atkinson_dither(img):
 
 
 def convert_to_1bit(img):
-    #return img.convert(mode='1', dither=Image.NONE)
     log('Converting to 1 bit')
     return img.convert('1')
 
@@ -97,25 +87,9 @@ def adjust_brightness(img, value):
     return result
 
 
-def print_config(printer):
-    config = "heatTime=%s, heatInterval=%s, heatingDots=%s" % (HEAT_TIME, HEAT_INTERVAL, HEATING_DOTS)
-    printer.print_text(config)
-    printer.linefeed()
-
-
-def print_picture(img):
-    data = list(img.getdata())
-    w, h = img.size
-    printer = ThermalPrinter(heatTime=HEAT_TIME, heatInterval=HEAT_INTERVAL, heatingDots=HEATING_DOTS)
-    printer.linefeed()
-    printer.print_bitmap(data, w, h, False)
-    printer.linefeed(3)
-
-
 def log(message):
     if DEBUG:
         print message
-
 
 if __name__ == '__main__':
     _main()
