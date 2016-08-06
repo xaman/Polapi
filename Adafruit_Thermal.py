@@ -124,8 +124,8 @@ class Adafruit_Thermal(Serial):
 		  35, # Print density
 		  (printBreakTime << 5) | printDensity)
 
-		self.dotPrintTime = 0.03
-		self.dotFeedTime  = 0.0021
+		self.dotPrintTime = 0.06
+		self.dotFeedTime  = 0.005
 
 
 	# Because there's no flow control between the printer and computer,
@@ -151,7 +151,7 @@ class Adafruit_Thermal(Serial):
 
 	# Printer performance may vary based on the power supply voltage,
 	# thickness of paper, phase of the moon and other seemingly random
-	# variables.  This method sets the times (in microseconds) for the
+	# variables.  This method sets the times for the
 	# paper to advance one vertical 'dot' when printing and feeding.
 	# For example, in the default initialized state, normal-sized text
 	# is 24 dots tall and the line spacing is 32 dots, so the time for
@@ -161,10 +161,8 @@ class Adafruit_Thermal(Serial):
 	# many factors.  This lets you tweak the timing to avoid excessive
 	# delays and/or overrunning the printer buffer.
 	def setTimes(self, p, f):
-		# Units are in microseconds for
-		# compatibility with Arduino library
-		self.dotPrintTime = p / 1000000.0
-		self.dotFeedTime  = f / 1000000.0
+		self.dotPrintTime = p
+		self.dotFeedTime  = f
 
 
 	# 'Raw' byte-writing method
