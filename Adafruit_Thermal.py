@@ -546,27 +546,3 @@ class Adafruit_Thermal(Serial):
 		# to inter-line spacing.  Default line spacing is 32
 		# (char height of 24, line spacing of 8).
 		self.writeBytes(27, 51, val)
-
-
-	# Copied from Arduino lib for parity; is marked 'not working' there
-	def tab(self):
-		self.writeBytes(9)
-
-
-	# Copied from Arduino lib for parity; is marked 'not working' there
-	def setCharSpacing(self, spacing):
-		self.writeBytes(27, 32, 0, 10)
-
-
-	# Overloading print() in Python pre-3.0 is dirty pool,
-	# but these are here to provide more direct compatibility
-	# with existing code written for the Arduino library.
-	def print(self, *args, **kwargs):
-		for arg in args:
-			self.write(str(arg))
-
-	# For Arduino code compatibility again
-	def println(self, *args, **kwargs):
-		for arg in args:
-			self.write(str(arg))
-		self.write('\n')
