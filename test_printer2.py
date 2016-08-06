@@ -14,16 +14,19 @@ from thermal_printer import ThermalPrinter
 
 MAX_WIDTH = 384
 DEBUG = True
-PICTURE_PATH = "picture.png"
+INPUT = "picture.png"
+OUTPUT = "output.png"
 
 
 printer = Adafruit_Thermal("/dev/ttyAMA0", 19200, timeout=5)
 
 def _main():
-    img = Image.open(PICTURE_PATH)
+    img = Image.open(INPUT)
     if (is_horizontal(img)):
         img = rotate(img)
     img = resize(img)
+    img = adjust_contrast(img, 1.5)
+    img.save(OUTPUT)
     log('Printing')
     printer.printImage(img, True)
     printer.feed(2)
@@ -78,6 +81,13 @@ def atkinson_dither(img):
 def convert_to_1bit(img):
     log('Converting to 1 bit')
     return img.convert('1')
+
+
+def adjust_contrast(img, value):
+	enhancer = ImageEnhance.Contrast(img)
+	result = enhancer.enhance(value)
+	print 'Contrast set'
+	return result
 
 
 def adjust_brightness(img, value):
