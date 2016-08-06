@@ -43,8 +43,8 @@ class Adafruit_Thermal(Serial):
 
 	resumeTime      =  0.0
 	byteTime        =  0.0
-	dotPrintTime    =  0.033
-	dotFeedTime     =  0.0025
+	dotPrintTime    =  0.08
+	dotFeedTime     =  0.007
 	prevByte        = '\n'
 	column          =  0
 	maxColumn       = 32
@@ -124,8 +124,8 @@ class Adafruit_Thermal(Serial):
 		  35, # Print density
 		  (printBreakTime << 5) | printDensity)
 
-		self.dotPrintTime = 0.06
-		self.dotFeedTime  = 0.005
+		self.dotPrintTime = 0.08
+		self.dotFeedTime  = 0.006
 
 
 	# Because there's no flow control between the printer and computer,
