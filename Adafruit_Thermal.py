@@ -37,6 +37,8 @@ from __future__ import print_function
 from serial import Serial
 import time
 
+INITIAL_TIMEOUT_IN_SECONDS = 1.0
+
 class Adafruit_Thermal(Serial):
 
 	resumeTime      =  0.0
@@ -78,7 +80,7 @@ class Adafruit_Thermal(Serial):
 		# power up -- it needs a moment to cold boot and initialize.
 		# Allow at least 1/2 sec of uptime before printer can
 		# receive data.
-		self.timeoutSet(0.5)
+		self.timeoutSet(INITIAL_TIMEOUT_IN_SECONDS)
 
 		self.wake()
 		self.reset()
@@ -203,18 +205,6 @@ class Adafruit_Thermal(Serial):
 					self.column += 1
 				self.timeoutSet(d)
 				self.prevByte = c
-
-
-	# The bulk of this method was moved into __init__,
-	# but this is left here for compatibility with older
-	# code that might get ported directly from Arduino.
-	def begin(self, heatTime=defaultHeatTime):
-		self.writeBytes(
-		  27,       # Esc
-		  55,       # 7 (print settings)
-		  20,       # Heat dots (20 = balance darkness w/no jams)
-		  heatTime, # Lib default = 45
-		  250)      # Heat interval (500 uS = slower but darker)
 
 
 	def reset(self):
