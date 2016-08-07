@@ -62,6 +62,7 @@ def print_picture():
     if (is_horizontal(img)):
         img = rotate(img)
     img = resize(img)
+    img = adjust_brightness(img, 1.25)
     log('Printing!')
     printer.printImage(img, True)
     printer.feed(2)
