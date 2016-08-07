@@ -62,7 +62,6 @@ def print_picture():
     if (is_horizontal(img)):
         img = rotate(img)
     img = resize(img)
-    img = adjust_brightness(img, 1.25)
     log('Printing!')
     printer.printImage(img, True)
     printer.feed(2)
@@ -93,6 +92,13 @@ def resize(img):
     return resized
 
 
+def adjust_contrast(img, value):
+	enhancer = ImageEnhance.Contrast(img)
+	result = enhancer.enhance(value)
+	print 'Contrast set'
+	return result
+
+
 def adjust_brightness(img, value):
     enhancer = ImageEnhance.Brightness(img)
     result = enhancer.enhance(value)
@@ -103,6 +109,7 @@ def adjust_brightness(img, value):
 def log(message):
     if (DEBUG):
         print message
+
 
 if __name__ == '__main__':
     main()
